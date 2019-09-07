@@ -48,7 +48,6 @@ helm install --name wp-01 stable/wordpress
 
 It takes about few minutes due to the way disks are attached to k8s
 
-
 ## Install local depenencies
 
 ```bash
@@ -57,4 +56,11 @@ pyenv activate chaos
 
 pip install -r requirements.txt
 
+```
+
+## Look at the app
+
+```bash
+kubectl port-forward wp-01-wordpress-7d8bd5468-dw5r9 8080:80
+kubectl get endpoints
 ```
