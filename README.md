@@ -44,6 +44,8 @@ kubectl label nodes aks-agentpool-32137755-0 app=web
 kubectl label nodes aks-agentpool-32137755-1 app=web
 
 kubectl label nodes aks-agentpool-32137755-2 app=mysql
+
+kubectl label node aks-agentpool-32137755-3 app=drain-me --overwrite
 ```
 
 ## Add azurefile storage provider
@@ -107,10 +109,11 @@ chaos run --journal-path journal.json experiment.json
 ```
 
 Play around, with each run `chaos run experiment.json` and see what happens:
+
 - change replicas to 2
 - in `experiment.json` change `pauses after` value to 10.
 
-
+Notice to uncordon node 3 after running experiment.
 
 ### Generate report
 

@@ -46,6 +46,21 @@
             "pauses": {
                 "after": 90
             }
+        },
+        {
+            "type": "action",
+            "name": "drain_nodes",
+            "provider": {
+                "type": "python",
+                "module": "chaosk8s.node.actions",
+                "func": "drain_nodes",
+                "arguments": {
+                    "label_selector": "app=drain-me"
+                }
+            },
+            "pauses": {
+                "after": 90
+            }
         }
     ]
 }
