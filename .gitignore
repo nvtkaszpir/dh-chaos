@@ -4,3 +4,5 @@ discovery.json
 chaostoolkit.log
 journal.json
 report.html
+report.md
+report.pdf
