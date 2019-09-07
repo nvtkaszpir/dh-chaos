@@ -1,2 +1,5 @@
 .kube/*
 **/*.tar.gz
+discovery.json
+chaostoolkit.log
+journal.json

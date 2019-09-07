@@ -1,0 +1,51 @@
+{
+    "version": "1.0.0",
+    "title": "wordpress-is-alive",
+    "description": "N/A",
+    "tags": [],
+    "steady-state-hypothesis": {
+        "title": "wordpress-endpoint-exists",
+        "probes": [
+            {
+                "type": "probe",
+                "name": "microservice_available_and_healthy",
+                "provider": {
+                    "type": "python",
+                    "module": "chaosk8s.probes",
+                    "func": "microservice_available_and_healthy",
+                    "arguments": {
+                        "name": "wp-02-wordpress",
+                        "ns": "default",
+                        "label_selector": "app=wp-02-wordpress"
+                    }
+                },
+                "tolerance": true
+            }
+        ]
+    },
+    "method": [
+        {
+            "type": "action",
+            "name": "terminate_pods",
+            "provider": {
+                "type": "python",
+                "module": "chaosk8s.pod.actions",
+                "func": "terminate_pods",
+                "arguments": {
+                    "label_selector": "app=wp-02-wordpress",
+                    "name_pattern": null,
+                    "all": false,
+                    "rand": true,
+                    "mode": "fixed",
+                    "qty": 2,
+                    "grace_period": -1,
+                    "ns": "default",
+                    "order": "alphabetic"
+                }
+            },
+            "pauses": {
+                "after": 90
+            }
+        }
+    ]
+}

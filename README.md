@@ -38,12 +38,19 @@ kubectl label nodes aks-agentpool-32137755-1 app=web
 
 kubectl label nodes aks-agentpool-32137755-2 app=mysql
 
+## Add azurefile storage provider
+
+```bash
+kubectl apply -f provision/kubernetes/azure-pvc-roles.yaml
+kubectl apply -f provision/kubernetes/azure-file-sc.yaml
+```
+
 ## Deploying app
 
 Using Bitnami Wordpress.
 
 ```bash
-helm install --name wp-01 stable/wordpress
+helm install --name wp-02 stable/wordpress -f wordpress-azurefile.yaml
 ```
 
 It takes about few minutes due to the way disks are attached to k8s
@@ -61,6 +68,26 @@ pip install -r requirements.txt
 ## Look at the app
 
 ```bash
-kubectl port-forward wp-01-wordpress-7d8bd5468-dw5r9 8080:80
+kubectl port-forward service/wp-02-wordpress 80:80 8081:80
 kubectl get endpoints
+```
+
+## Chaos
+
+```bash
+chaos discover chaostoolkit-kubernetes --no-install
+```
+
+See `discovery.json`
+
+Run chaos experiment which kills 2 pods (out of 3):
+
+```bash
+chaos run experiment.json
+```
+
+Generate report:
+
+```bash
+chaos report --export-format=html5 experiment.json report.html
 ```
