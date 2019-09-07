@@ -16,7 +16,7 @@ export KUBECONFIG="$(pwd)/.kube/config"
 
 ## On fresh cluster
 
-Install helm [v2.14.3](https://github.com/helm/helm/releases/tag/v2.14.3) 
+Install helm [v2.14.3](https://github.com/helm/helm/releases/tag/v2.14.3)
 
 Then we need to apply RBAC on cluster and deploy helm:
 
@@ -50,7 +50,7 @@ kubectl label node aks-agentpool-32137755-3 app=drain-me --overwrite
 
 ## Add azurefile storage provider
 
-If you are using Azure k8s then we need read-write-many storageclass to allow
+If you are using Azure k8s then we need read-write-many StorageClass to allow
 multiple pods to write to storage:
 
 ```bash
@@ -76,9 +76,12 @@ kubectl get endpoints
 kubectl get svc
 ```
 
-Notice that Azure managed kubernetes is exposing app publicly to the internet.
+Notice that Azure managed kubernetes is exposing app publicly to the Internet.
 
 ## Install local dependencies for chaos toolkit
+
+Use [pyenv](https://github.com/pyenv/pyenv) with [pyenv-virtualenv](https://github.com/pyenv/pyenv-virtualenv)
+to install desired python version and then to create virtualenv for the project:
 
 ```bash
 pyenv virtualenv chaos
@@ -117,8 +120,15 @@ Notice to uncordon node 3 after running experiment.
 
 ### Generate report
 
-Generate report:
+Generate example report:
 
 ```bash
 chaos report --export-format=html5 journal.json report.html
 ```
+
+Pro tip: there are more formats, such as: asciidoc, beamer, commonmark,
+context, docbook, docx, dokuwiki, dzslides, epub, epub3, fb2, haddock,
+html, html5, icml, json, latex, man, markdown, markdown_github,
+markdown_mmd, markdown_phpextra, markdown_strict, mediawiki, native,
+odt, opendocument, opml, org, pdf, plain, revealjs, rst, rtf, s5,
+slideous, slidy, texinfo, textile
