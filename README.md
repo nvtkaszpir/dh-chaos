@@ -55,6 +55,8 @@ Secondary:
   `~/.kube/` on the vm/container, and fetch it to the laptops -
   this is a short living cluster and it was wiped after 12h
 - Using storage class `azurefile` was much faster than normal disks in Azure
+- total cloud cost 4.45 EUR - 12h of compute/storage with k8s clusters,
+  could be a bit less due to the fact we never touched Azure before.
 
 ### Apps and management
 
