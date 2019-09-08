@@ -34,9 +34,12 @@ Secondary:
 
 ### Objectives achievements
 
-- primary objective was not achieved, we adjusted it to the node drain due
-  to time constraints
-- secondary objective achieved
+- original primary objective was not achieved - due to time and tech knowledge
+  constraints about Azure in general
+- primary objective was adjusted - we changed it from `replace node` to
+  `drain selected node` - and this was acheived successfully
+- secondary objective achieved, we know Azure managed k8s and
+  chaos-toolkit better
 
 ### Azure
 
