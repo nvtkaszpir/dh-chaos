@@ -4,25 +4,72 @@
 This was done during Distributed Cloud Native Hackathon 7th Sept 2019.
 [Meetup event info](https://www.meetup.com/Cloud-Native-Kubernetes-Warsaw/events/264307416/)
 
-Use case:
-
-- get to know managed Kubernetes on Microsoft Azure
-- use [chaos-toolkit](https://docs.chaostoolkit.org/) to play around
-
 It is advised to read this document from fully before doing any cluster setups
 or app deployments.
+
+## Objectives
+
+Primary:
+
+- try to recreate demo scenario from chaos-toolkit about app on k8s with node
+  pool replacement (this was on GKE, so we want to try it on Azure)
+
+Secondary:
+
+- get to know managed Kubernetes on Microsoft Azure - prior experience almost 0
+- use [chaos-toolkit](https://docs.chaostoolkit.org/) to play around,
+  without prior experience with the tool
 
 ## Known limitations
 
 - **this is a sample example not for production use, use at your own risk**.
 - this was tested only on Azure, with simple k8s cluster with
-  smallest instances, 1 core, 4 nodes without
+  smallest instances, 1 core, 4 nodes
 - we used node draining for simulating node loss - after talking in the team
   and due to time constraints we ruled out calling to Azure API to effectively
   delete nodes
 - remember to delete cluster afterwards
 
-## Before you begin and use specific cluster
+## Main takeaways
+
+### Objectives achievements
+
+- primary objective was not achieved, we adjusted it to the node drain due
+  to time constraints
+- secondary objective achieved
+
+### Azure
+
+- Microsoft Azure provides managed kubernetes, but to use autoscaling node
+  pools requires additional subscription features which are in Preview mode
+  - we were unable to activate it, so we switched to simple node draining scenario
+- Due to how DNS (sic!) was set in web spawned console in Azure
+  (console icon in top right corner) we were unable to reach k8s cluster
+  with kubectl, also we had no time to adjust the env which was console using
+  (such as adjusting DNS and so on and walled-garden approach of that vm/
+  container/whatever) due to time constrains and lack of experience
+- Due to above we went full YOLO mode `¯\_(ツ)_/¯` - we decided to compress
+  `~/.kube/` on the vm/container, and fetch it to the laptops -
+  this is a short living cluster and it was wiped after 12h
+- Using storage class `azurefile` was much faster than normal disks in Azure
+
+### Apps and management
+
+- Helm chart for `stable/wordpress` has very slow readiness probes
+
+### Chaos toolkit
+
+- REALLY READ chaos-toolkit tutorials before using it (derp mode on)
+- `chaos-toolkit` looks pretty interesting in automating tests, especially
+  for nightly builds
+- Currently chaos-toolkit provides a lot of testing extensions especially for
+  AWS, while GCP is severely lacking (actually just add/remove node pools in GKE)
+- Currently chaos-toolkit looks mature in it's core but needs additional
+  extendability
+
+## Preparing infrastructure
+
+### Creating kubernetes cluster
 
 Create kubernetes cluster with 4 nodes, in Azure it should take about 30min.
 
@@ -34,7 +81,19 @@ export KUBECONFIG="$(pwd)/.kube/config"
 
 If using Azure and playing in shell console in the cloud just [fetch cluster credentials](https://docs.microsoft.com/en-us/cli/azure/aks?view=azure-cli-latest#az-aks-get-credentials).
 
-## On fresh cluster
+### Add azurefile storage provider
+
+If you are using Azure k8s then we need read-write-many StorageClass to allow
+multiple pods to write to storage:
+
+```bash
+kubectl apply -f provision/kubernetes/azure-pvc-roles.yaml
+kubectl apply -f provision/kubernetes/azure-file-sc.yaml
+```
+
+For other storage/cloud providers you may need to adjust it accordingly.
+
+### Install helm
 
 Install helm [v2.14.3](https://github.com/helm/helm/releases/tag/v2.14.3)
 on your control host.
@@ -48,21 +107,12 @@ helm init --service-account tiller --wait
 
 ```
 
-## Add azurefile storage provider
-
-If you are using Azure k8s then we need read-write-many StorageClass to allow
-multiple pods to write to storage:
-
-```bash
-kubectl apply -f provision/kubernetes/azure-pvc-roles.yaml
-kubectl apply -f provision/kubernetes/azure-file-sc.yaml
-```
-
-For other storage/cloud providers you may need to adjust it accordingly.
+Since now your kubernetes cluster should be ready for app deployment.
 
 ## Deploying app
 
-Using Bitnami Wordpress:
+We will use official helm chart for wordpress with our minor customizations
+within `wordpress-azurefile.yaml` file:
 
 ```bash
 helm install --name wp-02 stable/wordpress -f wordpress-azurefile.yaml
@@ -70,7 +120,7 @@ helm install --name wp-02 stable/wordpress -f wordpress-azurefile.yaml
 
 It takes about few minutes due to the way storage is attached to k8s nodes.
 
-## Look at the app
+### Look at the app
 
 ```bash
 kubectl port-forward service/wp-02-wordpress 80:80 8081:80
@@ -80,10 +130,11 @@ kubectl get svc
 
 Notice that Azure managed kubernetes may be exposing app publicly to the Internet.
 
-## Apply labels on the nodes
+### Apply labels on the nodes
 
 We will use label `drain-me` as a selector when doing one of the tests later.
-We just want to manage specific nodes in this scenario.
+We just want to manage specific nodes in this scenario, and leave node with
+database intact.
 
 ```bash
 kubectl get nodes
@@ -106,7 +157,9 @@ kubectl label nodes aks-agentpool-32137755-3 app=drain-me --overwrite
 
 ```
 
-## Install local dependencies for chaos toolkit
+## Using chaos toolkit
+
+### Install local dependencies for chaos toolkit
 
 We will use [pyenv](https://github.com/pyenv/pyenv) with [pyenv-virtualenv](https://github.com/pyenv/pyenv-virtualenv)
 to install desired python version and then to create virtualenv for the project:
@@ -118,8 +171,6 @@ pyenv activate chaos
 pip install -r requirements.txt
 
 ```
-
-## Using chaos toolkit
 
 ### Read tutorial
 
