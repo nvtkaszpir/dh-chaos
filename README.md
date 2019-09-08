@@ -193,17 +193,17 @@ See `discovery.json`
 
 ### Look at the experiment
 
-Look into `experiment.jsont`  - we defined there:
+Look into `experiment.json`  - we defined there:
 
 - hypothesis that specific microservice is up and healthy, where healthy
   means it has proper number of desired replicas
 - testing methods to validate above:
   - kill 2 pods and wait 90s
-  - drain 1 radom node and wait 90s
+  - drain 1 random node and wait 90s
 
 ### Run chaos experiment
 
-We know that in Auzre and non given cluster the specific wordpress pods are
+We know that in Azure and non given cluster the specific wordpress pods are
 in Ready state in about 70s, so we will use 90s as a base time span for tests.
 
 Run chaos experiment which kills 2 pods (out of 3) and waits 90s:
