@@ -4,7 +4,7 @@
 This was done during Distributed Cloud Native Hackathon 7th Sept 2019.
 [Meetup event info](https://www.meetup.com/Cloud-Native-Kubernetes-Warsaw/events/264307416/)
 
-It is advised to read this document from fully before doing any cluster setups
+It is advised to read this document fully before doing any cluster setups
 or app deployments.
 
 ## Objectives
@@ -16,7 +16,8 @@ Primary:
 
 Secondary:
 
-- get to know managed Kubernetes on Microsoft Azure - prior experience almost 0
+- get to know about managed Kubernetes on Microsoft Azure
+  - prior experience almost 0
 - use [chaos-toolkit](https://docs.chaostoolkit.org/) to play around,
   without prior experience with the tool
 
